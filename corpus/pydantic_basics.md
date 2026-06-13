@@ -1,4 +1,4 @@
-ydantic Complete Guide — From Basics to Advanced
+Pydantic Complete Guide — From Basics to Advanced
 Pydantic is the most widely used data validation library for Python. It uses Python type hints to validate, serialize, and document data. Pydantic v2 (released 2023) is written in Rust and is 5-50x faster than v1.
 1. Defining a Model
 Models are defined by inheriting from BaseModel:
