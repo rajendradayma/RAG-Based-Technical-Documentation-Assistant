@@ -1,4 +1,4 @@
-chroma_db/
+faiss_index/
 feedback_log.jsonl
 __pycache__/
 *.pyc
