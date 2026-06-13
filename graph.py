@@ -3,7 +3,7 @@ LangGraph self-corrective RAG workflow.
 
 Nodes:
   1. analyze_query   - classify + rewrite the user's question
-  2. retrieve        - vector similarity search
+  2. retrieve        - vector similarity search (FAISS)
   3. grade_documents - LLM grades each chunk as relevant/irrelevant
   4. transform_query - rewrite query for re-retrieval (on grading failure)
   5. generate        - produce final answer with citations
@@ -22,6 +22,7 @@ from typing import TypedDict, List
 from langgraph.graph import StateGraph, END
 from langchain_groq import ChatGroq
 
+from ingest import query_index
 
 MAX_RETRIES = 2
 TOP_K = 4
@@ -72,21 +73,7 @@ Respond ONLY with valid JSON in this exact format, no extra text:
 
 User question: {question}
 """
-def retrieve(state: GraphState) -> dict:
-    from ingest import query_index
 
-    results = query_index(state["search_query"], top_k=TOP_K)
-
-    documents = []
-    for r in results:
-        documents.append({
-            "text": r["text"],
-            "source": r["source"],
-            "chunk_index": r["chunk_index"],
-            "relevant": None,
-        })
-
-    return {"documents": documents}
 
 def analyze_query(state: GraphState) -> dict:
     llm = get_llm()
@@ -117,25 +104,18 @@ def analyze_query(state: GraphState) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Node 2: Retrieval
+# Node 2: Retrieval (FAISS)
 # ---------------------------------------------------------------------------
 
 def retrieve(state: GraphState) -> dict:
-    collection = get_collection()
-    results = collection.query(
-        query_texts=[state["search_query"]],
-        n_results=TOP_K,
-    )
+    results = query_index(state["search_query"], top_k=TOP_K)
 
     documents = []
-    docs_list = results.get("documents", [[]])[0]
-    metas_list = results.get("metadatas", [[]])[0]
-
-    for text, meta in zip(docs_list, metas_list):
+    for r in results:
         documents.append({
-            "text": text,
-            "source": meta.get("source", "unknown"),
-            "chunk_index": meta.get("chunk_index", -1),
+            "text": r["text"],
+            "source": r["source"],
+            "chunk_index": r["chunk_index"],
             "relevant": None,
         })
 
