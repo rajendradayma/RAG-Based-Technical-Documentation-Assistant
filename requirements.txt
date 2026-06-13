@@ -3,7 +3,6 @@ langgraph
 langchain
 langchain-groq
 langchain-community
-chromadb==0.5.23
+faiss-cpu
 sentence-transformers
 tavily-python
-protobuf==4.25.3
