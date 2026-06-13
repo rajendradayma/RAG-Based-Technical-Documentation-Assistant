@@ -12,7 +12,10 @@ Required secrets (Settings -> Secrets on Streamlit Cloud, or .streamlit/secrets.
 import os
 import json
 import time
+import os
+os.environ["PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION"] = "python"
 
+import streamlit as st
 import streamlit as st
 
 # --- Load secrets into environment BEFORE importing graph/ingest modules ----
