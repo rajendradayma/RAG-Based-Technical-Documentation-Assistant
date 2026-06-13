@@ -22,7 +22,6 @@ from typing import TypedDict, List
 from langgraph.graph import StateGraph, END
 from langchain_groq import ChatGroq
 
-from ingest import get_collection
 
 MAX_RETRIES = 2
 TOP_K = 4
@@ -73,7 +72,21 @@ Respond ONLY with valid JSON in this exact format, no extra text:
 
 User question: {question}
 """
+def retrieve(state: GraphState) -> dict:
+    from ingest import query_index
 
+    results = query_index(state["search_query"], top_k=TOP_K)
+
+    documents = []
+    for r in results:
+        documents.append({
+            "text": r["text"],
+            "source": r["source"],
+            "chunk_index": r["chunk_index"],
+            "relevant": None,
+        })
+
+    return {"documents": documents}
 
 def analyze_query(state: GraphState) -> dict:
     llm = get_llm()
