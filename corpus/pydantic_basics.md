@@ -1,5 +1,5 @@
 
-pydantic_docs = '''# Pydantic Documentation
+# Pydantic Documentation
 
 Pydantic is the most widely used data validation library for Python. It uses Python type hints to validate, serialize, and document data. Pydantic v2 (released in 2023) is written in Rust and is 5-50x faster than v1.
 
